@@ -1,0 +1,347 @@
+<div class="component-wrapper">
+
+  <div class="dual-panel h-50">
+    <div class="half-panel panel-left h-100">
+      <div class="panel panel--raised-small" style="justify-content: center; align-items: center;">
+
+        <form autocomplete="off" [formGroup]="generalForm" (ngSubmit)="onSubmit()">
+
+          <div class="ntp-wrapper" style="min-width: 300px;">
+            <div class="form-group input--compressed">
+              <div class="form-group__text">
+                <input formControlName="contact" id="contact-input" type="text">
+                <label for="contact-input">Contact</label>
+              </div>
+            </div>
+            <div class="form-group input--compressed">
+              <div class="form-group__text">
+                <input formControlName="location" id="location-input" type="text">
+                <label for="locarion-input">Location</label>
+              </div>
+            </div>
+            <div (click)="toggleEPGMenu()" class="form-group dropdown input--compressed" [ngClass]="{'active': epgMenuOpen }">
+              <div class="form-group__text select">
+                <input id="select-epg" value="{{ epgMap[generalForm.get('epg').value] }}">
+                <label for="select-epg">Management EPG</label>
+              </div>
+              <div class="dropdown__menu">
+                <a (click)="setEPGValue('ib')">In-Band</a>
+                <a (click)="setEPGValue('oob')">Out-of-Band</a>
+              </div>
+            </div>
+          </div>
+
+        </form>
+
+      </div>
+    </div>
+
+    <div class="half-panel panel-right h-100">
+      <div class="panel panel--raised-small">
+        
+        <div class="ntp-wrapper">
+          <div class="ntp-controls">
+            <div class="ntp-controls-title">
+              <span>SNMP Users</span>
+            </div>
+            <div class="ntp-controls-item">
+              <span (click)="toggleUser();" class="icon-add icon-small"></span>
+            </div>
+            <div class="ntp-controls-item">
+              <span (click)="editUser();" class="icon-pencil icon-small"></span>
+            </div>
+            <div class="ntp-controls-item">
+              <span (click)="deleteUser()" class="icon-remove icon-small clickable"></span>
+            </div>
+          </div>
+        
+          <div class="table-wrapper">
+            <div class="responsive-table">
+              <table class="table table--fixed table--selectable">
+                <thead>
+                  <tr>
+                    <th class="sortable" (click)="sortByUser()">Name <span class="sort-indicator icon-chevron-down"></span></th>
+                    <th class="sortable" (click)="sortByVersion()">Version <span class="sort-indicator icon-chevron-down"></span></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr (click)="toggleActive(snmpUser)" *ngFor="let snmpUser of snmpData.users" [ngClass]="{'active': snmpUser.active }">
+                    <td>{{ snmpUser.name }}</td>
+                    <td>{{ snmpUser.version }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="dual-panel h-50">
+    <div class="half-panel panel-left h-100">
+      <div class="panel panel--raised-small">
+
+        <div class="ntp-wrapper">
+          <div class="ntp-controls">
+            <div class="ntp-controls-title">
+              <span>Subnets</span>
+            </div>
+            <div class="ntp-controls-item">
+              <span (click)="toggleSubnet()" class="icon-add icon-small"></span>
+            </div>
+            <div class="ntp-controls-item">
+              <span (click)="editSubnet()" class="icon-pencil icon-small"></span>
+            </div>
+            <div class="ntp-controls-item">
+              <span (click)="deleteSubnet()" class="icon-remove icon-small clickable"></span>
+            </div>
+          </div>
+        
+          <div class="table-wrapper">
+            <div class="responsive-table">
+              <table class="table table--fixed table--selectable">
+                <thead>
+                  <tr>
+                    <th class="sortable" (click)="sortByIP(snmpData.subnets)">Subnet <span class="sort-indicator icon-chevron-down"></span></th>
+                    <th>Mask</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr (click)="toggleActive(subnet)" *ngFor="let subnet of snmpData.subnets" [ngClass]="{'active': subnet.active }">
+                    <td>{{ subnet.subnet }}</td>
+                    <td>{{ subnet.mask }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="half-panel panel-right h-100">
+      <div class="panel panel--raised-small">
+
+        <div class="ntp-wrapper">
+          <div class="ntp-controls">
+            <div class="ntp-controls-title">
+              <span>Trap Servers</span>
+            </div>
+            <div class="ntp-controls-item">
+              <span (click)="toggleTrap();" class="icon-add icon-small"></span>
+            </div>
+            <div class="ntp-controls-item">
+              <span (click)="editTrap();" class="icon-pencil icon-small"></span>
+            </div>
+            <div class="ntp-controls-item">
+              <span (click)="deleteTrap()" class="icon-remove icon-small clickable"></span>
+            </div>
+          </div>
+
+          <div class="table-wrapper">
+            <div class="responsive-table">
+              <table class="table table--fixed table--selectable">
+                <thead>
+                  <tr>
+                    <th class="sortable" (click)="sortByIP(snmpData.traps)">Hostname/IP <span class="sort-indicator icon-chevron-down"></span></th>
+                    <th>Port</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr (click)="toggleActive(trap)" *ngFor="let trap of snmpData.traps" [ngClass]="{'active': trap.active }">
+                    <td>{{ trap.addr }}</td>
+                    <td>{{ trap.port }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="modal modal--small" [ngClass]="{'hide': !userModal }">
+  <div class="modal__dialog">
+    <div class="modal__content" style="border: #dfdfdf 1px solid;">
+      <a class="modal__close" (click)="cancelUser();"><span class="icon-close icon-medium"></span></a>
+
+      <form autocomplete="off" [formGroup]="snmpForm" (ngSubmit)="onSubmit()">
+        <div class="modal__header">
+          <h1 class="modal__title" style="font-size: 40px;" *ngIf="userEdit == null">Add SNMP User</h1>
+          <h1 class="modal__title" style="font-size: 40px;" *ngIf="userEdit != null">Update SNMP User</h1>
+        </div>
+        <div class="modal__body">
+
+          <div class="snmp-form">
+            <div class="row">
+
+              <div class="col-2"></div>
+              <div class="col-8">
+                <label class="switch" style="justify-content: center;">
+                  <input formControlName="v3" type="checkbox">
+                  <span class="switch__label">V2</span>
+                  <span class="switch__input"></span>
+                  <span class="switch__label">V3</span>
+                </label>
+                <div class="divider"></div>
+              </div>
+              <div class="col-2"></div>
+
+              <div class="col-3"></div>
+              <div class="col-6" style="display: flex; flex-direction: column; justify-content: center;">
+                <div class="form-group input--compressed">
+                  <div class="form-group__text">
+                    <input formControlName="name" id="name-input" type="text">
+                    <label for="name-input" *ngIf="snmpForm.get('v3').value == false">Community</label>
+                    <label for="name-input" *ngIf="snmpForm.get('v3').value == true">Name</label>
+                  </div>
+                </div>
+
+                <ng-container *ngIf="snmpForm.get('v3').value == true">
+                  <label style="padding-top: 20px;">Privacy Type</label>
+                  <div class="btn-group" style="padding-top: 20px;">
+                    <button type="button" (click)="setPrivacy('aes-128');" class="btn btn--small btn--primary-ghost" [ngClass]="{'selected': snmpForm.get('privType').value == 'aes-128' }">AES-128</button>
+                    <button type="button" (click)="setPrivacy('des');" class="btn btn--small btn--primary-ghost" [ngClass]="{'selected': snmpForm.get('privType').value == 'des' }">DES</button>
+                    <button type="button" (click)="setPrivacy('none');" class="btn btn--small btn--primary-ghost" [ngClass]="{'selected': snmpForm.get('privType').value == 'none' }">None</button>
+                  </div>
+
+                  <div class="form-group input--compressed" style="padding-top: 20px;" *ngIf="snmpForm.get('privType').value != 'none'">
+                    <div class="form-group__text">
+                      <input formControlName="privKey" id="privkey-input" type="password">
+                      <label for="privkey-input">Privacy Key</label>
+                    </div>
+                  </div>
+
+                  <label style="padding-top: 20px;">Authorization Type</label>
+                  <div class="btn-group" style="padding-top: 20px;">
+                    <button type="button" (click)="setAuth('hmac-md5-96');" class="btn btn--small btn--primary-ghost" [ngClass]="{'selected': snmpForm.get('authType').value == 'hmac-md5-96' }">MD5</button>
+                    <button type="button" (click)="setAuth('hmac-sha1-96');" class="btn btn--small btn--primary-ghost" [ngClass]="{'selected': snmpForm.get('authType').value == 'hmac-sha1-96' }">SHA1</button>
+                  </div>
+
+                  <div class="form-group input--compressed" style="padding-top: 20px;">
+                    <div class="form-group__text">
+                      <input formControlName="authKey" id="authkey-input" type="password">
+                      <label for="authkey-input">Authorization Key</label>
+                    </div>
+                  </div>
+                </ng-container>
+
+              </div>
+              <div class="col-3"></div>
+
+            </div>
+          </div>
+
+        </div>
+        <div class="modal__footer">
+          <button type="button" class="btn btn--success" (click)="saveUser();" *ngIf="userEdit == null">Save</button>
+          <button type="button" class="btn btn--success" (click)="saveUser();" *ngIf="userEdit != null">Update</button>
+          <button type="button" class="btn btn--negative" (click)="cancelUser();">Cancel</button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal modal--small" [ngClass]="{'hide': !trapModal }">
+  <div class="modal__dialog">
+    <div class="modal__content" style="border: #dfdfdf 1px solid;">
+      <a class="modal__close" (click)="cancelTrap();"><span class="icon-close icon-medium"></span></a>
+
+      <form autocomplete="off" [formGroup]="trapForm" (ngSubmit)="onSubmit()">
+        <div class="modal__header">
+          <h1 class="modal__title" style="font-size: 40px;" *ngIf="trapEdit == null">Add Trap Server</h1>
+          <h1 class="modal__title" style="font-size: 40px;" *ngIf="trapEdit != null">Update Trap Server</h1>
+        </div>
+        <div class="modal__body">
+
+          <div class="snmp-form">
+            <div class="row">
+
+              <div class="col-3"></div>
+              <div class="col-6" style="display: flex; flex-direction: column; justify-content: center;">
+                <div class="form-group input--compressed">
+                  <div class="form-group__text">
+                    <input formControlName="addr" id="addr-input" type="text">
+                    <label for="addr-input">Hostname/IP</label>
+                  </div>
+                </div>
+
+                <div class="form-group input--compressed">
+                  <div class="form-group__text">
+                    <input formControlName="port" id="port-input" type="text">
+                    <label for="port-input">Port</label>
+                  </div>
+                </div>
+              </div>
+              <div class="col-3"></div>
+
+            </div>
+          </div>
+
+        </div>
+        <div class="modal__footer">
+          <button type="button" class="btn btn--success" (click)="saveTrap();" *ngIf="trapEdit == null">Save</button>
+          <button type="button" class="btn btn--success" (click)="saveTrap();" *ngIf="trapEdit != null">Update</button>
+          <button type="button" class="btn btn--negative" (click)="cancelTrap();">Cancel</button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal modal--small" [ngClass]="{'hide': !subnetModal }">
+  <div class="modal__dialog">
+    <div class="modal__content" style="border: #dfdfdf 1px solid;">
+      <a class="modal__close" (click)="cancelSubnet();"><span class="icon-close icon-medium"></span></a>
+
+      <form autocomplete="off" [formGroup]="subnetForm" (ngSubmit)="onSubmit()">
+        <div class="modal__header">
+          <h1 class="modal__title" style="font-size: 40px;" *ngIf="subnetEdit == null">Add SNMP Subnet</h1>
+          <h1 class="modal__title" style="font-size: 40px;" *ngIf="subnetEdit != null">Update SNMP Subnet</h1>
+        </div>
+        <div class="modal__body">
+
+          <div class="snmp-form">
+            <div class="row">
+
+              <div class="col-3"></div>
+              <div class="col-6" style="display: flex; flex-direction: column; justify-content: center;">
+                <div class="form-group input--compressed">
+                  <div class="form-group__text">
+                    <input formControlName="subnet" id="subnet-input" type="text">
+                    <label for="subnet-input">Subnet</label>
+                  </div>
+                </div>
+
+                <div class="form-group input--compressed">
+                  <div class="form-group__text">
+                    <input formControlName="mask" id="mask-input" type="text">
+                    <label for="mask-input">Mask</label>
+                  </div>
+                </div>
+              </div>
+              <div class="col-3"></div>
+
+            </div>
+          </div>
+
+        </div>
+        <div class="modal__footer">
+          <button type="button" class="btn btn--success" (click)="saveSubnet();" *ngIf="subnetEdit == null">Save</button>
+          <button type="button" class="btn btn--success" (click)="saveSubnet();" *ngIf="subnetEdit != null">Update</button>
+          <button type="button" class="btn btn--negative" (click)="cancelSubnet();">Cancel</button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
